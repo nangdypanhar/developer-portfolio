@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import NavBar from './components/NavBar'
+import Cart from './pages/Cart'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import Products from './pages/Products'
@@ -18,6 +19,7 @@ function App() {
           <Route path="/todos" element={<Todos />} />
           <Route path="/users" element={<Users />} />
           <Route path="/users/:id" element={<UserDetail />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
