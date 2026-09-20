@@ -9,6 +9,7 @@ const links = [
   { to: '/todos', label: 'Todos' },
   { to: '/users', label: 'Users' },
   { to: '/cart', label: 'Cart' },
+  { to: '/debounce-demo', label: 'Debounce' },
 ]
 
 function AuthControl() {

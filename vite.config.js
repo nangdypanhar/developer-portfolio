@@ -14,4 +14,9 @@ export default defineConfig({
       '@': path.resolve(dirname, './src'),
     },
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/setupTests.ts'],
+  },
 })

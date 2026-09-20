@@ -26,7 +26,7 @@ function UserDirectory() {
       </div>
 
       {loading && (
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <ul role="status" aria-label="Loading users" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[0, 1, 2, 3].map((placeholder) => (
             <li key={placeholder} className="h-16 animate-pulse rounded-lg border border-gray-200 bg-gray-100" />
           ))}

@@ -1,4 +1,5 @@
-import { createContext, useContext, useMemo, useReducer, type Dispatch, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useReducer, type Dispatch, type ReactNode } from 'react'
+import { useLocalStorage } from '../hooks/useLocalStorage'
 
 export interface CartLine {
   id: string
@@ -45,7 +46,13 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null)
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, dispatch] = useReducer(cartReducer, [])
+  const [storedItems, setStoredItems] = useLocalStorage<CartLine[]>('cart-items', [])
+  const [items, dispatch] = useReducer(cartReducer, storedItems)
+
+  useEffect(() => {
+    setStoredItems(items)
+  }, [items, setStoredItems])
+
   const value = useMemo(() => ({ items, dispatch }), [items])
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
