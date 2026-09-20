@@ -1,7 +1,7 @@
-import type { Product } from '../../types/product'
+import type { PublicProduct } from '../../types/product'
 
 interface ProductCardProps {
-  product: Product
+  product: PublicProduct
 }
 
 function ProductCard({ product }: ProductCardProps) {
