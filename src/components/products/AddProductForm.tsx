@@ -1,29 +1,37 @@
-import { useState, type SubmitEvent } from 'react'
+import { useState, type ChangeEvent, type SubmitEvent } from 'react'
 import { validateProduct } from '../../lib/validateProduct'
-import type { FormErrors, NewProductForm } from '../../types/product'
+import type { FormErrors, ProductDraft } from '../../types/product'
 
 interface AddProductFormProps {
   onAdd: (name: string, price: number) => void
 }
 
-const emptyForm: NewProductForm = { name: '', price: '' }
-
 function AddProductForm({ onAdd }: AddProductFormProps) {
-  const [form, setForm] = useState<NewProductForm>(emptyForm)
+  const [draft, setDraft] = useState<ProductDraft>({})
   const [errors, setErrors] = useState<FormErrors>({})
+
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    setDraft((prev) => ({ ...prev, name: e.target.value }))
+  }
+
+  function handlePriceChange(e: ChangeEvent<HTMLInputElement>) {
+    setDraft((prev) => ({ ...prev, price: e.target.value }))
+  }
 
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    const validationErrors = validateProduct(form)
+    const validationErrors = validateProduct(draft)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {
       return
     }
 
-    onAdd(form.name.trim(), Number(form.price))
-    setForm(emptyForm)
+    const name = draft.name?.trim() ?? ''
+    const price = Number(draft.price?.trim() ?? '')
+    onAdd(name, price)
+    setDraft({})
   }
 
   return (
@@ -37,8 +45,8 @@ function AddProductForm({ onAdd }: AddProductFormProps) {
         <input
           id="product-name"
           type="text"
-          value={form.name}
-          onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+          value={draft.name ?? ''}
+          onChange={handleNameChange}
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
         />
         {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
@@ -51,8 +59,8 @@ function AddProductForm({ onAdd }: AddProductFormProps) {
         <input
           id="product-price"
           type="text"
-          value={form.price}
-          onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
+          value={draft.price ?? ''}
+          onChange={handlePriceChange}
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
         />
         {errors.price && <p className="text-xs text-red-600">{errors.price}</p>}
