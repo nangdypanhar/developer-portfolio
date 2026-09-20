@@ -1,40 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useFetch } from '../../hooks/useFetch'
+import type { User } from '../../types/user'
 
 const USERS_URL = 'https://jsonplaceholder.typicode.com/users'
 
 function UserDirectory() {
-  const [status, setStatus] = useState('loading')
-  const [users, setUsers] = useState([])
-  const [error, setError] = useState(null)
+  const { data, loading, error } = useFetch<User[]>(USERS_URL)
   const [query, setQuery] = useState('')
 
-  useEffect(() => {
-    let cancelled = false
-
-    fetch(USERS_URL)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Failed to load users (${response.status})`)
-        }
-        return response.json()
-      })
-      .then((data) => {
-        if (cancelled) return
-        setUsers(data)
-        setStatus('success')
-      })
-      .catch((err) => {
-        if (cancelled) return
-        setError(err instanceof Error ? err.message : 'Failed to load users.')
-        setStatus('error')
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
+  const users = data ?? []
   const filteredUsers = users.filter((user) => user.name.toLowerCase().includes(query.trim().toLowerCase()))
 
   return (
@@ -50,7 +25,7 @@ function UserDirectory() {
         />
       </div>
 
-      {status === 'loading' && (
+      {loading && (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {[0, 1, 2, 3].map((placeholder) => (
             <li key={placeholder} className="h-16 animate-pulse rounded-lg border border-gray-200 bg-gray-100" />
@@ -58,19 +33,19 @@ function UserDirectory() {
         </ul>
       )}
 
-      {status === 'error' && (
+      {!loading && error && (
         <p className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           Could not load users: {error}
         </p>
       )}
 
-      {status === 'success' && filteredUsers.length === 0 && (
+      {!loading && !error && filteredUsers.length === 0 && (
         <p className="text-sm text-gray-500">
           {users.length === 0 ? 'No users found.' : `No users match "${query}".`}
         </p>
       )}
 
-      {status === 'success' && filteredUsers.length > 0 && (
+      {!loading && !error && filteredUsers.length > 0 && (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {filteredUsers.map((user) => (
             <li key={user.id}>
