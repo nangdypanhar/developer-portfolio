@@ -41,12 +41,12 @@ function AddHabitForm({ onAdd }: AddHabitFormProps) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Meditate 10 minutes"
-          className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
+          className="min-w-0 flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
         />
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+          className="shrink-0 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
         >
           {submitting ? 'Adding…' : 'Add habit'}
         </button>

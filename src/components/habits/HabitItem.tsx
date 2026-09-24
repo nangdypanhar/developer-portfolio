@@ -47,16 +47,18 @@ function HabitItem({ habit, today, onRename, onToggleActive, onToggleDone, onDel
     run(() => onDelete(habit.id))
   }
 
+  const locked = busy || habit.pending
+
   return (
-    <li className="flex flex-col gap-2 rounded-lg border border-gray-200 bg-white p-4">
-      <div className="flex flex-wrap items-center gap-3">
+    <li className="flex min-w-0 flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4">
+      <div className="flex min-w-0 items-start gap-3">
         <input
           type="checkbox"
           aria-label={`Done today: ${habit.name}`}
           checked={doneToday}
-          disabled={busy || !habit.isActive}
+          disabled={locked || !habit.isActive}
           onChange={(e) => run(() => onToggleDone(habit.id, e.target.checked))}
-          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
         />
 
         {editing ? (
@@ -73,26 +75,34 @@ function HabitItem({ habit, today, onRename, onToggleActive, onToggleDone, onDel
                 setEditing(false)
               }
             }}
-            className="flex-1 rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
+            className="min-w-0 flex-1 rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none"
           />
         ) : (
           <span
-            className={`flex-1 text-sm ${habit.isActive ? 'text-gray-900' : 'text-gray-400 line-through'} ${
+            className={`min-w-0 flex-1 break-words text-sm ${habit.isActive ? 'text-gray-900' : 'text-gray-400 line-through'} ${
               doneToday ? 'font-semibold' : ''
             }`}
           >
             {habit.name}
           </span>
         )}
+      </div>
 
-        <span className="text-xs text-gray-500">
-          {habit.logDates.length} {habit.logDates.length === 1 ? 'day' : 'days'} logged
-        </span>
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        {habit.pending ? (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+            Queued · will sync
+          </span>
+        ) : (
+          <span className="text-xs text-gray-600">
+            {habit.logDates.length} {habit.logDates.length === 1 ? 'day' : 'days'} logged
+          </span>
+        )}
 
-        <div className="flex items-center gap-2 text-xs font-medium">
+        <div className="flex items-center gap-1 text-xs font-medium">
           {editing ? (
             <>
-              <button type="button" disabled={busy} onClick={handleSave} className="text-indigo-600 hover:text-indigo-700">
+              <button type="button" disabled={busy} onClick={handleSave} className="rounded px-2 py-1.5 text-indigo-600 hover:bg-indigo-50">
                 Save
               </button>
               <button
@@ -102,25 +112,35 @@ function HabitItem({ habit, today, onRename, onToggleActive, onToggleDone, onDel
                   setDraft(habit.name)
                   setEditing(false)
                 }}
-                className="text-gray-500 hover:text-gray-900"
+                className="rounded px-2 py-1.5 text-gray-600 hover:bg-gray-100"
               >
                 Cancel
               </button>
             </>
           ) : (
-            <button type="button" disabled={busy} onClick={() => setEditing(true)} className="text-gray-500 hover:text-gray-900">
+            <button
+              type="button"
+              disabled={locked}
+              onClick={() => setEditing(true)}
+              className="rounded px-2 py-1.5 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+            >
               Edit
             </button>
           )}
           <button
             type="button"
-            disabled={busy}
+            disabled={locked}
             onClick={() => run(() => onToggleActive(habit.id, !habit.isActive))}
-            className="text-gray-500 hover:text-gray-900"
+            className="rounded px-2 py-1.5 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
           >
             {habit.isActive ? 'Pause' : 'Resume'}
           </button>
-          <button type="button" disabled={busy} onClick={handleDelete} className="text-gray-500 hover:text-red-600">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={handleDelete}
+            className="rounded px-2 py-1.5 text-gray-600 hover:bg-red-50 hover:text-red-600"
+          >
             Delete
           </button>
         </div>

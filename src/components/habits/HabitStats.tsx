@@ -4,7 +4,7 @@ import CrashButton from '../CrashButton'
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5 rounded-lg border border-gray-200 bg-white p-4">
-      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs text-gray-600">{label}</span>
       <span className="text-xl font-semibold text-gray-900">{value}</span>
     </div>
   )
@@ -19,10 +19,10 @@ function HabitStats({ habits, today }: { habits: Habit[]; today: string }) {
   return (
     <section className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <h3 className="text-sm font-semibold text-gray-900">Stats</h3>
+        <h2 className="text-sm font-semibold text-gray-900">Stats</h2>
         <CrashButton label="Stats" />
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Stat label="Done today" value={`${doneToday} / ${active.length}`} />
         <Stat label="Completion" value={`${percent}%`} />
         <Stat label="Total check-ins" value={String(totalCheckIns)} />

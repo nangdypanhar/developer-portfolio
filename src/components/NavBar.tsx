@@ -17,12 +17,14 @@ function AuthControl() {
 
   if (user) {
     return (
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-700">Hi, {user.email}</span>
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="truncate text-sm text-gray-700" title={user.email}>
+          {user.email}
+        </span>
         <button
           type="button"
           onClick={handleSignOut}
-          className="text-xs font-medium text-gray-500 transition-colors hover:text-red-600"
+          className="shrink-0 text-xs font-medium text-gray-600 transition-colors hover:text-red-600"
         >
           Sign out
         </button>
@@ -43,11 +45,11 @@ function AuthControl() {
 function NavBar() {
   return (
     <nav className="border-b border-gray-200 bg-white">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 md:px-8">
-        <Link to="/habits" className="text-sm font-semibold text-gray-900">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 md:px-8">
+        <Link to="/habits" className="shrink-0 text-sm font-semibold text-gray-900">
           Habit Tracker
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <CrashButton label="Navigation" />
           <AuthControl />
         </div>

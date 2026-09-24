@@ -44,6 +44,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function signOut() {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
+    // The service worker caches API responses by URL, not by user; drop them so
+    // the next person on this device can't see this user's data offline.
+    if ('caches' in window) await caches.delete('supabase-api')
   }
 
   const value = useMemo(

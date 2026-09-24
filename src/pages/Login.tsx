@@ -46,7 +46,7 @@ function Login() {
 
   return (
     <section className="mx-auto flex max-w-sm flex-col gap-6 rounded-lg border border-gray-200 bg-white p-6">
-      <h2 className="text-lg font-semibold text-gray-900">{isSignIn ? 'Sign in' : 'Create account'}</h2>
+      <h1 className="text-lg font-semibold text-gray-900">{isSignIn ? 'Sign in' : 'Create account'}</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <label className="flex flex-col gap-1 text-sm text-gray-700">
