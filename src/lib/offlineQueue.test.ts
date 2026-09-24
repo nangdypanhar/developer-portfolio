@@ -26,3 +26,17 @@ describe('offlineQueue', () => {
     expect(isNetworkError(new Error('new row violates row-level security policy'))).toBe(false)
   })
 })
+
+describe('habit snapshot', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('saves per user and is wiped on sign-out', async () => {
+    const { saveSnapshot, readSnapshot, clearSnapshots } = await import('./offlineQueue')
+    saveSnapshot('user-a', [{ id: 'h1' }])
+    expect(readSnapshot('user-a')).toEqual([{ id: 'h1' }])
+    expect(readSnapshot('user-b')).toEqual([])
+
+    clearSnapshots()
+    expect(readSnapshot('user-a')).toEqual([])
+  })
+})

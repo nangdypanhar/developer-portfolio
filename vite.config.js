@@ -40,6 +40,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
+        // Take control of the page on the very first visit, so API responses are
+        // cached from the start. Updates still wait for the Refresh button.
+        clientsClaim: true,
         runtimeCaching: [
           {
             // Auth must always hit the network: never serve a cached token/session.

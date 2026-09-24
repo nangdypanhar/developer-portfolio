@@ -11,6 +11,8 @@ import { useOnlineStatus } from '../hooks/useOnlineStatus'
 import { createHabit, deleteHabit, fetchHabits, setDoneOn, today, updateHabit } from '../lib/habits'
 import {
   enqueueHabit,
+  readSnapshot,
+  saveSnapshot,
   isNetworkError,
   isQueuedId,
   readQueue,
@@ -31,6 +33,8 @@ function Habits() {
   const [habits, setHabits] = useState<Habit[] | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [syncError, setSyncError] = useState<string | null>(null)
+  // true when the list came from the offline snapshot instead of the server.
+  const [showingSaved, setShowingSaved] = useState(false)
   const syncing = useRef(false)
   const todayDate = today()
 
@@ -68,15 +72,37 @@ function Habits() {
     setHabits(null)
     fetchHabits(userId)
       .then((rows) => {
+        setShowingSaved(false)
         setHabits([...rows, ...readQueue(userId).map(queuedToHabit)])
         if (navigator.onLine) syncQueue()
       })
       .catch((error: unknown) => {
+        if (isNetworkError(error)) {
+          // Offline: open with the last list we saw so you can still add habits.
+          setShowingSaved(true)
+          setHabits([...readSnapshot<Habit>(userId), ...readQueue(userId).map(queuedToHabit)])
+          return
+        }
         setLoadError(error instanceof Error ? error.message : 'Failed to load habits.')
       })
   }, [userId, syncQueue])
 
   useEffect(load, [load])
+
+  // Keep the offline snapshot up to date (server rows only; the queue has its own storage).
+  useEffect(() => {
+    if (habits && !showingSaved) {
+      saveSnapshot(
+        userId,
+        habits.filter((h) => !h.pending),
+      )
+    }
+  }, [habits, showingSaved, userId])
+
+  // Back online after starting from the snapshot → fetch the real list.
+  useEffect(() => {
+    if (online && showingSaved) load()
+  }, [online, showingSaved, load])
 
   // Reconnected → flush the queue.
   const loaded = habits !== null
@@ -211,6 +237,11 @@ function Habits() {
             <p role="status" className="rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
               {queuedCount} {queuedCount === 1 ? 'habit is' : 'habits are'} queued and will sync{' '}
               {online ? 'now…' : 'when you reconnect.'}
+            </p>
+          )}
+          {showingSaved && (
+            <p role="status" className="rounded-md bg-gray-100 px-3 py-2 text-xs text-gray-600">
+              Showing your habits from the last time you were online.
             </p>
           )}
           {syncError && <p className="text-xs text-red-600">{syncError}</p>}

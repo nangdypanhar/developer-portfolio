@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { clearSnapshots } from '../lib/offlineQueue'
 import { supabase } from '../lib/supabase'
 
 interface AuthContextValue {
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // The service worker caches API responses by URL, not by user; drop them so
     // the next person on this device can't see this user's data offline.
     if ('caches' in window) await caches.delete('supabase-api')
+    clearSnapshots()
   }
 
   const value = useMemo(

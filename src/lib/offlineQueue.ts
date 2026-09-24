@@ -52,3 +52,37 @@ export function isNetworkError(error: unknown) {
   const message = error instanceof Error ? error.message : String(error)
   return /failed to fetch|networkerror|load failed|network request failed/i.test(message)
 }
+
+// Last list of habits we saw from the server, so the tracker still opens
+// offline even if the service worker never cached the API response.
+function snapshotKey(userId: string) {
+  return `habit-snapshot:${userId}`
+}
+
+export function saveSnapshot<T>(userId: string, habits: T[]) {
+  try {
+    localStorage.setItem(snapshotKey(userId), JSON.stringify(habits))
+  } catch {
+    // Storage full or blocked: offline start just shows an empty list.
+  }
+}
+
+export function readSnapshot<T>(userId: string): T[] {
+  try {
+    const raw = localStorage.getItem(snapshotKey(userId))
+    return raw ? (JSON.parse(raw) as T[]) : []
+  } catch {
+    return []
+  }
+}
+
+/** Called on sign-out so the next person on this device can't read it. */
+export function clearSnapshots() {
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('habit-snapshot:'))
+      .forEach((k) => localStorage.removeItem(k))
+  } catch {
+    // ignore
+  }
+}
