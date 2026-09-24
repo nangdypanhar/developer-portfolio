@@ -1,5 +1,4 @@
-import { useState, type FormEvent } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import WindowWidth from './WindowWidth'
 
@@ -13,17 +12,16 @@ const links = [
 ]
 
 function AuthControl() {
-  const { user, signIn, signOut } = useAuth()
-  const [email, setEmail] = useState('')
+  const { user, loading, signOut } = useAuth()
+  const navigate = useNavigate()
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const trimmed = email.trim()
-    if (trimmed.length === 0) {
-      return
-    }
-    signIn(trimmed)
-    setEmail('')
+  async function handleSignOut() {
+    await signOut()
+    navigate('/login')
+  }
+
+  if (loading) {
+    return null
   }
 
   if (user) {
@@ -32,7 +30,7 @@ function AuthControl() {
         <span className="text-sm text-gray-700">Hi, {user.email}</span>
         <button
           type="button"
-          onClick={signOut}
+          onClick={handleSignOut}
           className="text-xs font-medium text-gray-500 transition-colors hover:text-red-600"
         >
           Sign out
@@ -42,21 +40,12 @@ function AuthControl() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="you@example.com"
-        className="w-40 rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 focus:border-indigo-500 focus:outline-none"
-      />
-      <button
-        type="submit"
-        className="rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-indigo-700"
-      >
-        Sign in
-      </button>
-    </form>
+    <Link
+      to="/login"
+      className="rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-indigo-700"
+    >
+      Sign in
+    </Link>
   )
 }
 

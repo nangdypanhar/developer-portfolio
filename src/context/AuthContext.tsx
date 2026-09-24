@@ -1,29 +1,55 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
-
-interface AuthUser {
-  email: string
-}
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import type { Session, User } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabase'
 
 interface AuthContextValue {
-  user: AuthUser | null
-  signIn: (email: string) => void
-  signOut: () => void
+  user: User | null
+  session: Session | null
+  loading: boolean
+  signIn: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string) => Promise<void>
+  signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  function signIn(email: string) {
-    setUser({ email })
+  useEffect(() => {
+    // Restore any existing session (Supabase persists it in localStorage).
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      setLoading(false)
+    })
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession)
+    })
+
+    return () => listener.subscription.unsubscribe()
+  }, [])
+
+  async function signIn(email: string, password: string) {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) throw error
   }
 
-  function signOut() {
-    setUser(null)
+  async function signUp(email: string, password: string) {
+    const { error } = await supabase.auth.signUp({ email, password })
+    if (error) throw error
   }
 
-  const value = useMemo(() => ({ user, signIn, signOut }), [user])
+  async function signOut() {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+  }
+
+  const value = useMemo(
+    () => ({ user: session?.user ?? null, session, loading, signIn, signUp, signOut }),
+    [session, loading],
+  )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

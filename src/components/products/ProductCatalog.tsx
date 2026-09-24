@@ -1,5 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
-import { fetchProducts } from '../../lib/fetchProducts'
+import { useAuth } from '../../context/AuthContext'
+import { createProduct, fetchProducts } from '../../lib/fetchProducts'
 import type { Product, PublicProduct } from '../../types/product'
 import AddProductForm from './AddProductForm'
 import ProductCard from './ProductCard'
@@ -12,6 +13,8 @@ function ProductCatalog() {
   const [products, setProducts] = useState<Product[] | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [inStockOnly, setInStockOnly] = useState(false)
+  const [addError, setAddError] = useState<string | null>(null)
+  const { user } = useAuth()
 
   useEffect(() => {
     fetchProducts()
@@ -25,16 +28,14 @@ function ProductCatalog() {
     setInStockOnly(e.target.checked)
   }
 
-  function handleAddProduct(name: string, price: number) {
-    const newProduct: Product = {
-      id: crypto.randomUUID(),
-      name,
-      price,
-      inStock: true,
-      onSale: false,
-      costPrice: Math.round(price * 0.6 * 100) / 100,
+  async function handleAddProduct(name: string, price: number) {
+    setAddError(null)
+    try {
+      const newProduct = await createProduct(name, price)
+      setProducts((prev) => [...(prev ?? []), newProduct])
+    } catch (error: unknown) {
+      setAddError(error instanceof Error ? error.message : 'Failed to add product.')
     }
-    setProducts((prev) => [...(prev ?? []), newProduct])
   }
 
   if (loadError) {
@@ -83,7 +84,14 @@ function ProductCatalog() {
         ))}
       </div>
 
-      <AddProductForm onAdd={handleAddProduct} />
+      {user ? (
+        <>
+          <AddProductForm onAdd={handleAddProduct} />
+          {addError && <p className="text-sm text-red-600">Could not add product: {addError}</p>}
+        </>
+      ) : (
+        <p className="text-sm text-gray-500">Sign in to add products.</p>
+      )}
     </section>
   )
 }

@@ -3,6 +3,7 @@ import NavBar from './components/NavBar'
 import Cart from './pages/Cart'
 import DebounceDemo from './pages/DebounceDemo'
 import Home from './pages/Home'
+import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Products from './pages/Products'
 import Todos from './pages/Todos'
@@ -22,6 +23,7 @@ function App() {
           <Route path="/users/:id" element={<UserDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/debounce-demo" element={<DebounceDemo />} />
+          <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
