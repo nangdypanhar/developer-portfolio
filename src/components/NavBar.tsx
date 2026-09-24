@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import CrashButton from './CrashButton'
 
 function AuthControl() {
   const { user, loading, signOut } = useAuth()
@@ -46,7 +47,10 @@ function NavBar() {
         <Link to="/habits" className="text-sm font-semibold text-gray-900">
           Habit Tracker
         </Link>
-        <AuthControl />
+        <div className="flex items-center gap-3">
+          <CrashButton label="Navigation" />
+          <AuthControl />
+        </div>
       </div>
     </nav>
   )
