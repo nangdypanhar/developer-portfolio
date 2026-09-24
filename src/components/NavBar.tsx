@@ -1,15 +1,5 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import WindowWidth from './WindowWidth'
-
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/products', label: 'Products' },
-  { to: '/todos', label: 'Todos' },
-  { to: '/users', label: 'Users' },
-  { to: '/cart', label: 'Cart' },
-  { to: '/debounce-demo', label: 'Debounce' },
-]
 
 function AuthControl() {
   const { user, loading, signOut } = useAuth()
@@ -52,27 +42,11 @@ function AuthControl() {
 function NavBar() {
   return (
     <nav className="border-b border-gray-200 bg-white">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-8">
-        <div className="flex flex-wrap items-center gap-6">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.to === '/'}
-              className={({ isActive }) =>
-                isActive
-                  ? 'text-sm font-semibold text-indigo-600'
-                  : 'text-sm font-medium text-gray-500 transition-colors hover:text-gray-900'
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </div>
-        <div className="flex items-center gap-4">
-          <AuthControl />
-          <WindowWidth />
-        </div>
+      <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 md:px-8">
+        <Link to="/habits" className="text-sm font-semibold text-gray-900">
+          Habit Tracker
+        </Link>
+        <AuthControl />
       </div>
     </nav>
   )

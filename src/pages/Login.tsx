@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 type Mode = 'sign-in' | 'sign-up'
@@ -7,6 +7,9 @@ type Mode = 'sign-in' | 'sign-up'
 function Login() {
   const { user, signIn, signUp } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  // Where ProtectedRoute sent us from, so we can go back after signing in.
+  const from = (location.state as { from?: string } | null)?.from ?? '/habits'
   const [mode, setMode] = useState<Mode>('sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -15,7 +18,7 @@ function Login() {
   const [submitting, setSubmitting] = useState(false)
 
   if (user) {
-    return <Navigate to="/" replace />
+    return <Navigate to={from} replace />
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -26,7 +29,7 @@ function Login() {
     try {
       if (mode === 'sign-in') {
         await signIn(email.trim(), password)
-        navigate('/')
+        navigate(from, { replace: true })
       } else {
         await signUp(email.trim(), password)
         setMessage('Account created. Check your email to confirm, then sign in.')
