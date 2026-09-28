@@ -78,7 +78,7 @@ function AvatarUploader({ userId, email }: { userId: string; email: string }) {
     <section className="flex flex-wrap items-center gap-4 rounded-lg border border-gray-200 bg-white p-4">
       <div className="h-16 w-16 shrink-0 overflow-hidden rounded-full bg-gray-100 ring-1 ring-gray-200">
         {shownUrl ? (
-          <img src={shownUrl} alt={previewUrl ? 'Avatar preview' : 'Your avatar'} className="h-full w-full object-cover" />
+          <img src={shownUrl} width={64} height={64} alt={previewUrl ? 'Avatar preview' : 'Your avatar'} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-lg font-semibold text-gray-400">
             {loading ? '…' : email.charAt(0).toUpperCase()}
