@@ -1,0 +1,18 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    // "./supabase" resolves to supabase.expo.ts first (see metro.config.js).
+    "moduleSuffixes": [".expo", ""],
+    "paths": {
+      "@/*": ["./src/*"],
+      // The web app's src/: habit queries and types are shared, not copied.
+      "@shared/*": ["../src/*"],
+      // Packages that ../src/lib/supabase.expo.ts imports live in mobile/node_modules.
+      "@supabase/supabase-js": ["./node_modules/@supabase/supabase-js"],
+      "expo-sqlite/*": ["./node_modules/expo-sqlite/*"],
+      "react-native": ["./node_modules/react-native"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]
+}
