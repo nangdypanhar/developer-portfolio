@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* The Expo app (mobile/) has its own NativeWind styles; keep its classes out of the web CSS. */
+@source not "../mobile";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
